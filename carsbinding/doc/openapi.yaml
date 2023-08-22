@@ -1,0 +1,383 @@
+openapi: 3.0.3
+info:
+  title: Cars binding service
+  description: dummy service for cars and customers
+  version: 0.12.8
+tags:
+  - name: customers
+    description: Customer information
+  - name: cars
+    description: Car information
+paths:
+  /customers:
+    get:
+      tags:
+        - customers
+      summary: listing customers
+      description: Get list of customers
+      responses:
+        '200':
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      tags:
+        - customers
+      summary: add customer
+      description: Create new customer
+      parameters:
+        - name: name
+          in: query
+          description: Name of new customer
+          required: true
+          schema:
+            type: string
+        - name: phone
+          in: query
+          description: Phone of new customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        '400':
+          description: Invalid request
+  /customers/{customerId}:
+    get:
+      tags:
+        - customers
+      summary: get customer by id
+      description: Get customer detailed information
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of customer
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        '404':
+          description: Customer not found
+    put:
+      tags:
+        - customers
+      summary: update customer
+      description: Update existing customer
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of customer
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of customer
+          required: true
+          schema:
+            type: string
+        - name: phone
+          in: query
+          description: Phone of customer
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        '400':
+          description: Invalid request
+    delete:
+      tags:
+        - customers
+      summary: delete customer
+      description: Delete existing customer
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of customer
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        '404':
+          description: Customer not found
+  /customers/{customerId}/show-car:
+    get:
+      tags:
+        - customers
+      summary: get assigned car
+      description: Get car that assigned to customer
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of customer
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Assigned car found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        '404':
+          description: Customer or Car not found
+  /customers/{customerId}/assign-car/{carId}:
+    post:
+      tags:
+        - customers
+      summary: assign car to customer
+      description: Assign existing car to customer
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of customer
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: carId
+          in: path
+          description: ID of car
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Car assigned to customer
+        '404':
+          description: Customer or Car not found
+  /customers/{customerId}/unassign-car:
+    post:
+      tags:
+        - customers
+      summary: unassign car from customer
+      description: Unassign car and customer
+      parameters:
+        - name: customerId
+          in: path
+          description: ID of customer
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Car unassigned from customer
+        '404':
+          description: Customer not found or Car was not assigned
+  /cars:
+    get:
+      tags:
+        - cars
+      summary: list cars
+      description: Get list of cars
+      responses:
+        '200':
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Car"
+    post:
+      tags:
+        - cars
+      summary: add car
+      description: Create new car
+      parameters:
+        - name: model
+          in: query
+          description: Model of new car
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: query
+          description: Number of new car
+          required: true
+          schema:
+            type: string
+        - name: customer_id
+          in: query
+          description: Customers that owns car
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        '400':
+          description: Invalid request
+  /cars/{carId}:
+    get:
+      tags:
+        - cars
+      summary: get car by id
+      description: Get car detailed information
+      parameters:
+        - name: carId
+          in: path
+          description: ID of car
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        '404':
+          description: Car not found
+    put:
+      tags:
+        - cars
+      summary: update car
+      description: Update existing car
+      parameters:
+        - name: carId
+          in: path
+          description: ID of car
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: model
+          in: query
+          description: Model of car
+          required: true
+          schema:
+            type: string
+        - name: number
+          in: query
+          description: Number of car
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successfull operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        '400':
+          description: Invalid request
+    delete:
+      tags:
+        - cars
+      summary: delete car
+      description: Delete existing car
+      parameters:
+        - name: carId
+          in: path
+          description: ID of car
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Car deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Car"
+        '404':
+          description: Car not found
+  /cars/{carId}/show-customer:
+    get:
+      tags:
+        - cars
+      summary: find assigned customer
+      description: Find customer assigned to car
+      parameters:
+        - name: carId
+          in: path
+          description: ID of car
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        '404':
+          description: Customer or Car not found
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: shakti
+        phone:
+          type: string
+          example: dun-117
+    Car:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        model:
+          type: string
+          example: grey horse
+        number:
+          type: string
+          example: gh-333
+        customer_id:
+          type: integer
+          format: int64
+          example: 1

@@ -1,0 +1,50 @@
+
+customer
+	int id
+	string name
+	string phone
+	car* assignedCar
+car
+	int id
+	string model
+	string number
+	customer* customer
+
+
+URL:
+customer/
+	:get - получение списка пользователей
+	[0-9]+/ - id пользователя
+		:get - получение значений пользователя
+		:post - задание значений пользователя
+		assign-car/
+car/
+	:get - получение списка автомобилей
+	[0-9]/ - id автомобиля
+		:get - получение значений автомобиля
+		:post - задание значений автомобиля
+
+
+composer create-project laravel/laravel src
+php artisan make:test ApiTest
+php artisan make:model Customer --migration
+php artisan make:model Car --migration
+php artisan make:controller CustomerController --resource
+php artisan make:controller CarController --resource
+php artisan make:factory CustomerFactory
+php artisan make:factory CarFactory
+
+в .env DB_CONNECTION=sqlite
+touch database/database.sqlite
+
+если что-то пошло не так с тестами, нужно чистить базу sqlite (с фабриками и RefreshDatabase это уже не нужно)
+delete from customers;
+update sqlite_sequence set seq=0 where name='customers';
+delete from cars;
+update sqlite_sequence set seq=0 where name='cars';
+vacuum;
+
+для документации (не выгорело):
+composer require darkaonline/l5-swagger
+php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+php artisan l5-swagger:generate
