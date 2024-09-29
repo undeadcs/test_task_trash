@@ -1,12 +1,16 @@
 <?php
 require_once( __DIR__.'/ImageFormat.php' );
-require_once( __DIR__.'/ImageConverter.php' );
+require_once( __DIR__.'/Action.php' );
+require_once( __DIR__.'/Converter.php' );
 
-use images\ImageConverter;
 use images\ImageFormat;
+use images\Converter;
 
-$converter = new ImageConverter( glob( './*.png' ), 300, 300, ImageFormat::Pdf );
-$converter->Flush( 'main.pdf' );
+$converter = new Converter;
+
+if ( !$converter->Convert( glob( './*.png' ), 'main.pdf', ImageFormat::Pdf ) ) {
+	echo "[ERROR] Failed to convert\n";
+}
 /*$image = new Imagick;
 $image->setResolution( 300, 300 );
 $image->readImages( glob( './*.png' ) );
