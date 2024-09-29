@@ -1,84 +1,54 @@
 <?php
 namespace images;
 
-use Imagick;
-use ImagickPixel;
-
 /**
  * Image converter
  */
-class ImageConverter {
-	protected ?Imagick $image = null;
+class Converter {
+	/**
+	 * Action to apply to image
+	 */
+	protected array $actions;
 
-	public function __construct( string|array $path, int $width, int $height, ImageFormat $format ) {
-		$this->image = new Imagick;
-		$this->image->setResolution( $width, $height );
+	public function __construct( Action ...$actions ) {
+		$this->actions = $actions;
+	}
+
+	protected function CreateImage( string|array $path ) : \Imagick {
+		$image = new \Imagick;
 
 		if ( is_array( $path ) ) {
-			$this->image->readImages( $path );
+			$image->readImages( $path );
 		} else {
-			$this->image->readImage( $path );
+			$image->readImage( $path );
 		}
 
-		$this->image->setFormat( $format->value );
-	}
-
-	public function __destruct( ) {
-		$this->image->clear( );
-		$this->image->destroy( );
-		unset( $this->image );
-		$this->image = null;
+		return $image;
 	}
 
 	/**
-	 * Flush result to file
-	 */
-	public function Flush( string $path ) : bool {
-		return $this->image->writeImages( $path, true );
-	}
-
-	/**
-	 * Apply greyscale filter to image
+	 * Convert image
 	 *
+	 * @param string $src Source image file path
+	 * @param string $dst Destination image file path
+	 * @param ImageFormat $format Output image format
 	 * @return bool Success of operation
 	 */
-	public function Greyscale( ) : bool {
-		foreach( $this->image as $image ) {
-			if ( !$image->transformImageColorspace( Imagick::COLORSPACE_GRAY ) ) {
+	public function Convert( string|array $src, string $dst, ImageFormat $format ) : bool {
+		$image = $this->CreateImage( $src );
+
+		foreach( $this->actions as $action ) {
+			if ( !$action->Apply( $image ) ) {
 				return false;
 			}
 		}
 
-		return true;
-	}
+		$result = $image->setFormat( $format->value ) && $image->writeImages( $dst, true );
 
-	/**
-	 * Resize image
-	 *
-	 * @return bool Success of operation
-	 */
-	public function Resize( int $columns, int $rows, int $filter, float $blur, bool $fit = false ) : bool {
-		foreach( $this->image as $image ) {
-			if ( !$image->resizeImage( $columns, $rows, $filter, $blur, $fit ) ) {
-				return false;
-			}
-		}
+		$image->clear( );
+		$image->destroy( );
+		unset( $image );
 
-		return true;
-	}
-
-	/**
-	 * Rotate image
-	 *
-	 * @return bool Success of operation
-	 */
-	public function Rotate( float $degrees, string|ImagickPixel $background ) : bool {
-		foreach( $this->image as $image ) {
-			if ( !$image->rotateImage( $background, $degrees ) ) {
-				return false;
-			}
-		}
-
-		return true;
+		return $result;
 	}
 }
