@@ -97,13 +97,13 @@ class ImageFile {
 	/**
 	 * Rotate image
 	 *
-	 * @param float $degress Degrees of rotation (clockwise)
+	 * @param float $degree Degree of rotation (clockwise)
 	 * @param string|ImagickPixel $background Background color for filling empty space
 	 * @return bool Success of operation
 	 */
-	public function Rotate( float $degrees, string|ImagickPixel $background ) : bool {
+	public function Rotate( float $degree, string|ImagickPixel $background ) : bool {
 		foreach( $this->image as $image ) {
-			if ( !$image->rotateImage( $background, $degrees ) ) {
+			if ( !$image->rotateImage( $background, $degree ) ) {
 				return false;
 			}
 		}
